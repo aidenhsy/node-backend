@@ -1,0 +1,26 @@
+type Query {
+  soldItems(
+    """
+    开始日期
+    """
+    startDate: String!
+    """
+    结束日期
+    """
+    endDate: String!
+    """
+    筛选
+    """
+    filter: FilterInput
+  ): [SoldItem]
+}
+input FilterInput {
+  name: String
+}
+
+type SoldItem {
+  itemName: String
+  income: Float
+  quantity: Float
+  lastTotal: Float
+}

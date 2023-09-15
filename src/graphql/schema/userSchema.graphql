@@ -1,0 +1,579 @@
+# import DateScalar from './types/Date'
+scalar DateScalar
+scalar ApplicationScalar
+
+type Query {
+  """
+  通过header里面的token获取单个用户信息
+  """
+  user: User
+  """
+  测试user
+  """
+  testUser: User
+  """
+  获取所有用户
+  """
+  users(
+    """
+    获取数据数量
+    """
+    take: Int!
+    """
+    跳过数据数量
+    """
+    skip: Int!
+    """
+    筛选条件
+    """
+    filter: UsersFilter
+  ): UsersList!
+
+  """
+  通过用户id获取用户附件
+  """
+  userAttachmentsById(id: String): [UserAttachment]
+
+  """
+  通过用户id获取单个用户信息
+  """
+  userById(id: String): User
+
+  """
+  通过用户组id获取所有该组内所有子组的成员
+  """
+  usersByDepartmentId(department_id: String, take: Int, skip: Int): UsersList
+
+  """
+  通过姓名或者手机号码搜索人员
+  """
+  usersSearch(
+    """
+    搜索条件可是手机号码或者姓名
+    """
+    searchTerm: String
+  ): UsersList!
+}
+
+type Mutation {
+  """
+  添加新员工
+  """
+  createUser(createFields: CreateUserInput): User
+  """
+  更新员工信息
+  """
+  updateUser(id: ID!, updateFields: UpdateUserInput): User
+  """
+  删除员工
+  """
+  deleteUser(id: ID!): Boolean
+  """
+  删除员工附件
+  """
+  deleteUserAttachment(id: ID!): Boolean
+}
+
+input CreateUserInput {
+  name: String
+  mobile: String
+  department_id: ID
+  status: Int
+  hire_date: DateScalar
+}
+
+input UpdateUserInput {
+  application: Int
+  application_status: Int
+  actual_conversion_time: DateScalar
+  actual_overboard_time: DateScalar
+  avatar: String
+  bank_account_number: String
+  bank_name: String
+  basic_salary: Float
+  basic_salary_monthly: Float
+  birthday: DateScalar
+  cancel_onboarding_notes: String
+  cancel_onboarding_reason: Int
+  department_id: ID
+  departure_notes: String
+  departure_type: Int
+  email: String
+  employee_form_status: Int
+  employee_no: String
+  employee_type: Int
+  en_name: String
+  entered_workforce_date: DateScalar
+  ethnicity: Int
+  family_address: String
+  gender_id: Int
+  health_card_end: DateScalar
+  health_card_image: String
+  health_card_no: String
+  health_card_start: DateScalar
+  hire_date: DateScalar
+  hukou_location: String
+  hukou_type: Int
+  id_number: String
+  id_photo: String
+  id_photo_em_side: String
+  id_photo_po_side: String
+  id_type: Int
+  isAdmin: Int
+  job_title: String
+  last_day: DateScalar
+  manager_id: String
+  medical_insurance: Int
+  martial_status: Int
+  mobile: String
+  name: String
+  native_region: NativeRegionInput
+  open_id: String
+  overboard_note: String
+  personal_email: String
+  primary_emergency_contact: PrimaryEmergencyContactInput
+  probation_months: Int
+  provident_fund_account: String
+  salary_account: String
+  salary_type: String
+  social_security_account: String
+  status: Int
+  title_id: Int
+  update_time: DateScalar
+  user_id: String
+  work_age_type: String
+  work_location: String
+}
+
+enum EmployeeSort {
+  ROLE_RANKING_ASC
+  ROLE_RANKING_DESC
+}
+
+input UsersFilter {
+  """
+  转正申请
+  """
+  application: [Int]
+  """
+  转正状态
+  """
+  application_status: [Int]
+  """
+  离职开始和结束日期筛选 (eg: "[2023-05-01, 2023-05-10]")
+  """
+  actual_overboard_time: [DateScalar]
+  """
+  转正开始和结束日期筛选 (eg: "[2023-05-01, 2023-05-10]")
+  """
+  actual_conversion_time: [DateScalar]
+  """
+  考勤记录日期
+  """
+  attendanceDate: String
+  """
+  生日月份
+  """
+  birthday_months: [String]
+  """
+  员工部门
+  """
+  department_id: [String]
+  """
+  离职类型
+  """
+  departure_type: [Int]
+  """
+  人员类型
+  """
+  employee_type: [Int]
+
+  """
+  员工职位
+  """
+  job_title: [String]
+  """
+  用户角色, 是Available Roles 的 ENUM
+  """
+  roles: [AvailableRoles]
+  """
+  状态：2等于在职 其余数字等于离职
+  """
+  status: [Int]
+  """
+  生日开始和结束日期筛选 (eg: ["04-01", "04-25"])
+  """
+  birthday_range: [DateScalar]
+  """
+  入职开始和结束日期筛选 (eg: "[2023-05-01, 2023-05-10]")
+  """
+  hire_dates: [DateScalar]
+  """
+  入职周年筛选 (eg: ["04-01", "04-25"])
+  """
+  hire_anniversary: [DateScalar]
+  """
+  性别
+  """
+  gender_id: [Int]
+  """
+  考勤组id
+  """
+  groupIds: [String]
+
+  """
+  姓名或者电话搜索
+  """
+  search_term: String
+}
+
+input NativeRegionInput {
+  iso_code: String
+  name: String
+}
+
+input PrimaryEmergencyContactInput {
+  mobile: String
+  name: String
+  relationship: Int
+}
+
+type UserAttachment {
+  key: String
+  name: String
+  kind: String
+  isMulti: Boolean
+  attachmentContents: [UserAttachmentContent]
+}
+
+type UserAttachmentContent {
+  id: String
+  file_name: String
+  path: String
+}
+
+"""
+籍贯
+"""
+type NativeRegion {
+  """
+  ISO 编码
+  """
+  iso_code: String
+  """
+  名称
+  """
+  name: String
+}
+
+"""
+主要紧急联系人
+"""
+type PrimaryEmergencyContact {
+  """
+  紧急联系人姓名
+  """
+  name: String
+  """
+  与紧急联系人的关系
+  1：父母
+  2：配偶
+  3：子女
+  4：兄弟姐妹
+  5：朋友
+  6: 其他
+  """
+  relationship: Int
+  """
+  紧急联系人电话
+  """
+  mobile: String
+}
+
+"""
+用户信息
+"""
+type User {
+  id: ID!
+  """
+  转正申请
+  """
+  application: Int
+  """
+  转正状态
+  """
+  application_status: Int
+  """
+  每日考勤班次
+  """
+  attendances: [Attendance]
+  """
+  头像
+  """
+  avatar: String
+  """
+  实际转正日期
+  """
+  actual_conversion_time: DateScalar
+  """
+  实际离职日期
+  """
+  actual_overboard_time: DateScalar
+  """
+  银行卡号
+  """
+  bank_account_number: String
+  """
+  开户行
+  """
+  bank_name: String
+  """
+  基本工资
+  """
+  basic_salary: Float
+  """
+  月薪基本工资
+  """
+  basic_salary_monthly: Float
+  """
+  生日
+  """
+  birthday: DateScalar
+  """
+  取消入职备注
+  """
+  cancel_onboarding_notes: String
+  """
+  取消入职原因
+  """
+  cancel_onboarding_reason: Int
+  """
+  创建时间
+  """
+  created_at: DateScalar
+  """
+  部门id
+  """
+  department_id: String
+  """
+  部门
+  """
+  department: Department
+  """
+  离职类型
+  """
+  departure_type: Int
+  """
+  邮箱
+  """
+  email: String
+  """
+  入职登记表状态
+  """
+  employee_form_status: Int
+  """
+  工号
+  """
+  employee_no: String
+  """
+  人员类型
+  """
+  employee_type: Int
+  """
+  英文姓名
+  """
+  en_name: String
+  """
+  参加工作日期
+  """
+  entered_workforce_date: DateScalar
+  """
+  民族
+  """
+  ethnicity: Int
+  """
+  家庭地址
+  """
+  family_address: String
+  """
+  性别id
+  """
+  gender_id: Int
+  """
+  健康证到期日期
+  """
+  health_card_end: DateScalar
+  """
+  健康证图片
+  """
+  health_card_image: String
+  """
+  健康证卡号
+  """
+  health_card_no: String
+  """
+  健康证开始日期
+  """
+  health_card_start: DateScalar
+  """
+  入职日期
+  """
+  hire_date: DateScalar
+  """
+  户口所在地
+  """
+  hukou_location: String
+  """
+  户口类型
+  """
+  hukou_type: Int
+  """
+  证件号
+  """
+  id_number: String
+  """
+  证件照
+  """
+  id_photo: String
+  """
+  身份证照片（国徽面）
+  """
+  id_photo_em_side: String
+  """
+  身份证照片（人像面）
+  """
+  id_photo_po_side: String
+  """
+  证件类型
+  """
+  id_type: Int
+  """
+  是否是高级管理员
+  """
+  isAdmin: Int
+  """
+  职位id
+  """
+  job_id: Int
+  """
+  职位名称（将要deprecate，请用job）
+  """
+  job_title: String
+  """
+  离职日期
+  """
+  last_day: DateScalar
+  """
+  直属上级id
+  """
+  manager_id: String
+  """
+  婚姻状况
+  """
+  martial_status: Int
+  """
+  医疗保险
+  """
+  medical_insurance: Int
+  """
+  手机号码
+  """
+  mobile: String
+  """
+  中文姓名
+  """
+  name: String
+  """
+  籍贯
+  """
+  native_region: NativeRegion
+  """
+  飞书open_id
+  """
+  open_id: String
+  """
+  离职原因
+  """
+  overboard_note: String
+  """
+  个人邮箱
+  """
+  personal_email: String
+  """
+  主要紧急联系人
+  """
+  primary_emergency_contact: PrimaryEmergencyContact
+  """
+  试用期（月）
+  """
+  probation_months: Int
+  """
+  员工角色
+  """
+  roles: [Role]
+  """
+  公积金账号
+  """
+  provident_fund_account: String
+  """
+  工资账号
+  """
+  salary_account: String
+  """
+  薪资类型
+  """
+  salary_type: String
+  """
+  社保账号
+  """
+  social_security_account: String
+  """
+  员工状态
+  """
+  status: Int
+  """
+  已停用
+  """
+  title_id: Int
+  """
+  更新日期
+  """
+  updated_at: DateScalar
+  """
+  飞书user_id
+  """
+  user_id: String
+  """
+  工龄类型
+  """
+  work_age_type: String
+  """
+  工作地点
+  """
+  work_location: WorkLocation
+}
+
+type UsersList {
+  """
+  该查询返回的用户
+  """
+  items: [User!]!
+  """
+  该查询返回所有items的数量
+  """
+  totalCount: Int!
+}
+
+"""
+工作地点
+"""
+type WorkLocation {
+  """
+  工作地点 ID
+  """
+  id: Int
+  """
+  工作地点名称
+  """
+  name: String
+}

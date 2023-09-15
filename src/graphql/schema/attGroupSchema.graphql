@@ -1,0 +1,439 @@
+scalar DateScalar
+
+type Query {
+  """
+  获取所有考勤组信息
+  """
+  attGroups(
+    """
+    获取数据数量
+    """
+    take: Int!
+    """
+    跳过数据数量
+    """
+    skip: Int!
+    """
+    筛选条件
+    """
+    filter: AttGroupFilter
+  ): AttGroupRes
+  attGroupById(id: String!): AttGroup
+}
+
+type Mutation {
+  """
+  添加考勤组打卡地点
+  """
+  addAttendanceLocation(
+    attendance_group_id: String!
+    new_location: LocationInput!
+  ): [AttLocation]
+  """
+  添加新考勤组
+  """
+  createAttendanceGroup(attGroupFields: CreateAttendanceGroupInput): AttGroup
+
+  """
+  使用ID 删除考勤组
+  """
+  deleteAttendanceGroup(attendance_group_id: String!): AttGroup
+
+  """
+  通过location id删除考勤地点
+  """
+  deleteAttendanceLocation(attendance_location_id: String!): [AttLocation]
+
+  """
+  更新考勤组
+  """
+  updateAttendanceGroup(
+    attendance_group_id: String!
+    attGroupFields: UpdateAttendanceGroupInput
+  ): AttGroup
+}
+
+input AttGroupFilter {
+  """
+  考勤组名称
+  """
+  attendance_group_name: String
+  """
+  人员id
+  """
+  employee_id: String
+  """
+  排序方式
+  """
+  sort_by: SortOption
+}
+
+input LocationInput {
+  """
+  打卡地点名称
+  """
+  name: String!
+  """
+  纬度
+  """
+  latitude: Float!
+  """
+  经度
+  """
+  longitude: Float!
+}
+
+input CreateAttendanceGroupInput {
+  """
+  是否允许外勤打卡
+  """
+  allow_out_punch: Boolean
+  """
+  是否允许 PC 端打卡
+  """
+  allow_pc_punch: Boolean
+  """
+  国家日历 ID，0：不根据国家日历排休，1：中国大陆，2：美国，3：日本，4：印度，5：新加坡，默认 1
+  """
+  calendar_id: Int
+  """
+  每次打卡均需拍照
+  """
+  clockIn_need_photo: Boolean
+  """
+  生效时间
+  """
+  effect_time: DateScalar
+  """
+  是否开启人脸识别打卡
+  """
+  face_punch: Boolean
+  """
+  GPS 打卡的有效范围（
+  """
+  gps_range: Int
+  """
+  考勤类型，0：固定班制，2：排班制， 3：自由班制
+  """
+  group_type: Int
+  """
+  是否隐藏员工打卡详情
+  """
+  hide_staff_punch_time: Boolean
+  """
+  考勤 主负责人 列表
+  """
+  leader_ids: [String!]!
+  """
+  需要考勤的人员
+  """
+  members: [MembersInput]
+  """
+  考勤组名称
+  """
+  name: String!
+  """
+  外勤打卡允许员工隐藏详细地址（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_allowed_hide_addr: Boolean
+  """
+  外勤打卡需审批（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_approval: Boolean
+  """
+  外勤打卡需拍照（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_photo: Boolean
+  """
+  外勤打卡需填写备注（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_remark: Boolean
+  """
+  打卡类型，位运算。1：GPS 打卡，2：Wi-Fi 打卡，4：考勤机打卡，8：IP 打卡
+  """
+  punch_type: Int
+  """
+  休息日打卡需审批
+  """
+  rest_clockIn_need_approval: Boolean
+  """
+  是否展示累计时长
+  """
+  show_cumulative_time: Boolean
+  """
+  是否展示加班时长
+  """
+  show_over_time: Boolean
+  """
+  考勤子负责人 ID 列表
+  """
+  sub_leader_ids: [String]
+  """
+  时区
+  """
+  time_zone: String
+  """
+  考勤地点
+  """
+  locations: [AttLocationInput]
+}
+
+"""
+更新考勤组Input
+"""
+input UpdateAttendanceGroupInput {
+  """
+  是否允许外勤打卡
+  """
+  allow_out_punch: Boolean
+  """
+  是否允许 PC 端打卡
+  """
+  allow_pc_punch: Boolean
+  """
+  国家日历 ID，0：不根据国家日历排休，1：中国大陆，2：美国，3：日本，4：印度，5：新加坡，默认 1
+  """
+  calendar_id: Int
+  """
+  每次打卡均需拍照
+  """
+  clockIn_need_photo: Boolean
+  """
+  生效时间
+  """
+  effect_time: DateScalar
+  """
+  是否开启人脸识别打卡
+  """
+  face_punch: Boolean
+  """
+  GPS 打卡的有效范围（
+  """
+  gps_range: Int
+  """
+  考勤类型，0：固定班制，2：排班制， 3：自由班制
+  """
+  group_type: Int
+  """
+  是否隐藏员工打卡详情
+  """
+  hide_staff_punch_time: Boolean
+  """
+  考勤 主负责人 列表
+  """
+  leader_ids: [String]
+  """
+  需要考勤的人员
+  """
+  members: [MembersInput]
+  """
+  考勤组名称
+  """
+  name: String
+  """
+  外勤打卡允许员工隐藏详细地址（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_allowed_hide_addr: Boolean
+  """
+  外勤打卡需审批（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_approval: Boolean
+  """
+  外勤打卡需拍照（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_photo: Boolean
+  """
+  外勤打卡需填写备注（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_remark: Boolean
+  """
+  打卡类型，位运算。1：GPS 打卡，2：Wi-Fi 打卡，4：考勤机打卡，8：IP 打卡
+  """
+  punch_type: Int
+  """
+  休息日打卡需审批
+  """
+  rest_clockIn_need_approval: Boolean
+  """
+  班次id数组
+  """
+  shift_ids: [String]
+  """
+  是否展示累计时长
+  """
+  show_cumulative_time: Boolean
+  """
+  是否展示加班时长
+  """
+  show_over_time: Boolean
+  """
+  考勤子负责人 ID 列表
+  """
+  sub_leader_ids: [String]
+  """
+  时区
+  """
+  time_zone: String
+  """
+  考勤地点
+  """
+  locations: [AttLocationInput]
+}
+
+"""
+用户输入，type: 1=deparment_id, 2=employee_id
+"""
+input MembersInput {
+  id: String!
+  type: Int!
+}
+
+type AttGroup {
+  id: String
+  """
+  是否允许外勤打卡
+  """
+  allow_out_punch: Boolean
+  """
+  是否允许 PC 端打卡
+  """
+  allow_pc_punch: Boolean
+  """
+  国家日历 ID，0：不根据国家日历排休，1：中国大陆，2：美国，3：日本，4：印度，5：新加坡，默认 1
+  """
+  calendar_id: Int
+  """
+  每次打卡均需拍照
+  """
+  clockIn_need_photo: Boolean
+  """
+  需要打卡部门
+  """
+  bind_departments: [Department]
+  """
+  需要打卡员工
+  """
+  bind_employees: [User]
+  """
+  考勤组人数
+  """
+  bind_head_count: Int
+  """
+  生效时间
+  """
+  effect_time: DateScalar
+  """
+  是否开启人脸识别打卡
+  """
+  face_punch: Boolean
+  """
+  GPS 打卡的有效范围（
+  """
+  gps_range: Int
+  """
+  考勤类型，0：固定班制，2：排班制， 3：自由班制
+  """
+  group_type: Int
+  """
+  是否隐藏员工打卡详情
+  """
+  hide_staff_punch_time: Boolean
+  """
+  考勤 主负责人 列表
+  """
+  leaders: [User]
+  """
+  考勤地点
+  """
+  locations: [AttLocation]
+  """
+  考勤 子负责人 列表
+  """
+  sub_leaders: [User]
+  """
+  考勤组所有人员
+  """
+  members: [User]
+  """
+  考勤组名称
+  """
+  name: String
+  """
+  外勤打卡允许员工隐藏详细地址（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_allowed_hide_addr: Boolean
+  """
+  外勤打卡需审批（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_approval: Boolean
+  """
+  外勤打卡需拍照（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_photo: Boolean
+  """
+  外勤打卡需填写备注（需要允许外勤打卡才能设置生效）
+  """
+  out_punch_need_remark: Boolean
+  """
+  打卡类型，位运算。1：GPS 打卡，2：Wi-Fi 打卡，4：考勤机打卡，8：IP 打卡
+  """
+  punch_type: Int
+  """
+  休息日打卡需审批
+  """
+  rest_clockIn_need_approval: Boolean
+  """
+  含有班次
+  """
+  shift_lists: [ShiftList]
+  """
+  是否展示累计时长
+  """
+  show_cumulative_time: Boolean
+  """
+  是否展示加班时长
+  """
+  show_over_time: Boolean
+  """
+  考勤子负责人 ID 列表
+  """
+  sub_group_leaders: [User]
+  """
+  时区
+  """
+  time_zone: String
+}
+
+type AttGroupRes {
+  items: [AttGroup!]!
+  totalCount: Int!
+}
+
+type AttLocation {
+  id: ID
+  address: String
+  bssid: String
+  feature: String
+  gps_range: Int
+  ip: String
+  latitude: Float
+  longitude: Float
+  map_type: Int
+  name: String
+  ssid: String
+  type: Int
+}
+input AttLocationInput {
+  id: ID
+  address: String
+  bssid: String
+  feature: String
+  gps_range: Int
+  ip: String
+  latitude: Float
+  longitude: Float
+  map_type: Int
+  name: String
+  ssid: String
+  type: Int
+}

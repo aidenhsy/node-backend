@@ -1,0 +1,143 @@
+# import DateScalar from './types/Date'
+scalar DateScalar
+
+type Query {
+  hrStats: HrStats
+
+  """
+  本日，本周，本月，下月，上月 的员工生日的数量
+  """
+  birthdayStats(
+    """
+    查询日期 (如果为空，默认为当天日期)
+    """
+    date: DateScalar
+  ): BirthdayStats
+
+  """
+  本日，本周，本月，下月，上月 的员工入职周年的数量
+  """
+  hireDateStats(
+    """
+    查询日期 (如果为空，默认为当天日期)
+    """
+    date: DateScalar
+  ): HireDateStats
+  hrOnboardingStats: HrOnboardingStats
+  hrConversionStats: HrConversionStats
+  hrResignStats: HrResignStats
+}
+
+type BirthdayStats {
+  todayCount: Int
+  thisWeekCount: Int
+  thisMonthCount: Int
+  lastMonthCount: Int
+  nextMonthCount: Int
+}
+
+"""
+本日，本周，本月，下月，上月 的员工入职周年的数量
+"""
+type HireDateStats {
+  """
+  历年今天入职的员工数量
+  """
+  todayCount: Int
+  """
+  历年本周入职的员工数量(本周一到本周日)
+  """
+  thisWeekCount: Int
+  """
+  历年本月入职的员工数量(本月1号到本月最后1天)
+  """
+  thisMonthCount: Int
+  """
+  历年下月入职的员工数量(下月1号到下月最后1天)
+  """
+  lastMonthCount: Int
+  """
+  历年上月入职的员工数量(上月1号到上月最后1天)
+  """
+  nextMonthCount: Int
+}
+
+"""
+人事数据
+"""
+type HrStats {
+  """
+  在职 数量
+  status=2
+  """
+  isEmployedCount: Int
+  """
+  离职 数量
+  status=4
+  """
+  notEmployedCount: Int
+  """
+  正式 数量
+  status=2 && employee_type=1
+  """
+  regularEmployeeCount: Int
+  """
+  实习 数量
+  status=2 && employee_type=2
+  """
+  internEmployeeCount: Int
+  """
+  外包 数量
+  status=2 && employee_type=4
+  """
+  outsourcedEmployeeCount: Int
+  """
+  试用 数量
+  status=1
+  """
+  trialEmployeeCount: Int
+  """
+  待离职 数量
+  status=4
+  """
+  awaitUnemployCount: Int
+}
+
+type HrOnboardingStats {
+  """
+  全部待入职数量
+  """
+  awaitOnboardingCount: Int
+  """
+  今日待入职数量
+  """
+  todayAwaitOnboardingCount: Int
+  """
+  本月待入职数量
+  """
+  thisMonthAwaitOnboardingCount: Int
+}
+type HrConversionStats {
+  """
+  全部待转正数量
+  """
+  awaitRegularizedCount: Int
+  """
+  超期未转正数量
+  """
+  overdueRegularizedCount: Int
+  """
+  本月待转正数量
+  """
+  thisMonthAwaitRegularizedCount: Int
+  """
+  下月待转正数量
+  """
+  nextMonthAwaitRegularizedCount: Int
+}
+type HrResignStats {
+  """
+  全部待离职数量
+  """
+  awaitHiredCount: Int
+}

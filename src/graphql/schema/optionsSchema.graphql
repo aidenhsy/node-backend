@@ -1,0 +1,74 @@
+enum FieldEnums {
+  """
+  转正申请
+  """
+  APPLICATION
+
+  """
+  转正状态
+  """
+  APPLICATION_STATUS
+
+  """
+  取消入职原因
+  """
+  CANCEL_ONBOARDING_REASON
+
+  """
+  入职登记表状态
+  """
+  EMPLOYEE_FORM_STATUS
+
+  """
+  人员类型
+  """
+  EMPLOYEE_TYPE
+
+  """
+  民族
+  """
+  ETHNICITY
+
+  """
+  性别
+  """
+  GENDER
+
+  """
+  户口类型
+  """
+  HUKOU_TYPE
+
+  """
+  证件类型
+  """
+  ID_TYPE
+
+  """
+  婚姻状况
+  """
+  MARTIAL_STATUS
+
+  """
+  员工状态
+  """
+  STATUS
+}
+
+type Query {
+  options(input: FieldInput!): [OptionRes]
+}
+
+type OptionRes {
+  field: String
+  options: [Option]
+}
+
+input FieldInput {
+  fields: [FieldEnums!]!
+}
+
+type Option {
+  id: Int
+  value: String
+}

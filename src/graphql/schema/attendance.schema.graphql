@@ -1,0 +1,80 @@
+type Query {
+  """
+  获取所有排班
+  """
+  attendances: [Attendance]
+  """
+  每日统计
+  """
+  statisticsDay(
+    statisticsDayInput: StatisticsDayInput
+    take: Int!
+    skip: Int!
+  ): Statistics
+}
+
+type Mutation {
+  """
+  添加排班
+  """
+  createAttendances(
+    """
+    排班信息
+    """
+    createAttendanceInput: [CreateAttendanceInput]
+  ): MutationResponse
+  """
+  更新个人打卡记录
+  """
+  updateAttendance(
+    updateAttendanceInput: UpdateAttendanceInput
+  ): MutationResponse
+}
+
+type Statistics {
+  items: [Attendance]
+  totalCount: Int
+}
+
+type Attendance {
+  id: ID
+  attendance_location_id: String
+  attendance_location: AttendanceLocation
+  clock_in_location_id: String
+  clock_in_location: AttendanceLocation
+  clock_out_location_id: String
+  clock_out_location: AttendanceLocation
+  clock_in_time: String
+  clock_out_time: String
+  clock_in_result: Int
+  clock_out_result: Int
+  date: DateScalar
+  employee_id: String
+  employee: User
+  hours_of_attendance: Float
+  shift_id: String
+  shift: ShiftList
+}
+
+input StatisticsDayInput {
+  date: DateScalar!
+  groupIds: [String]
+}
+
+input StatisticsMonthlyInput {
+  date: String!
+  groupIds: [String]
+}
+
+input UpdateAttendanceInput {
+  employee_id: String!
+  date: DateScalar!
+  clock_in_time: String
+  clock_out_time: String
+}
+
+input CreateAttendanceInput {
+  date: DateScalar
+  employee_id: String
+  shift_id: String
+}

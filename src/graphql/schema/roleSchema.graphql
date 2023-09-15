@@ -1,0 +1,77 @@
+type Query {
+  """
+  获取所有角色
+  """
+  roles(name: String): [Role]
+  """
+  通过ID获取一个角色的信息
+  """
+  roleById(id: String!): Role
+}
+
+type Mutation {
+  """
+  添加角色
+  """
+  createRole(name: String): Role
+  """
+  删除角色
+  """
+  deleteRole(role_id: String): Role
+  """
+  添加人员到一个角色
+  """
+  addEmployee2Roles(role_id: String, employee_ids: [String]): Role
+  """
+  从一个角色删除一个人员
+  """
+  deleteEmployeeRole(role_id: String, employee_id: String): Role
+  """
+  更新角色路由
+  """
+  updateRoleNavs(role_id: String, nav_sm_ids: [String]): Role
+}
+
+"""
+角色信息
+"""
+type Role {
+  """
+  角色ID
+  """
+  id: ID!
+  """
+  角色名称
+  """
+  name: String
+  """
+  所属这个角色的人员
+  """
+  employees: [User]
+  """
+  排序
+  """
+  ranking: Int
+  """
+  角色的路由
+  """
+  navs: [NavXlCategory]
+}
+
+"""
+角色筛选选择
+"""
+enum AvailableRoles {
+  """
+  考勤组管理员
+  """
+  AttManager
+  """
+  人事管理员
+  """
+  HrManager
+  """
+  超级管理员
+  """
+  SuperManager
+}

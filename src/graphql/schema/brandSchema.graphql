@@ -1,0 +1,12 @@
+type Query {
+  """
+  所有品牌
+  """
+  brands(brandName: String): [Brand]
+}
+
+type Brand {
+  id: ID
+  name: String
+  stores: [Store]
+}

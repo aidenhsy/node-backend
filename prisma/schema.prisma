@@ -1,0 +1,935 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model attendance {
+  id                                                                           String                @id(map: "attendancePRIMARY2") @db.VarChar(50)
+  date                                                                         DateTime              @db.Date
+  employee_id                                                                  String                @db.VarChar(255)
+  shift_id                                                                     String                @db.VarChar(50)
+  clock_in_time                                                                DateTime?             @db.Time(6)
+  clock_out_time                                                               DateTime?             @db.Time(6)
+  attendance_location_id                                                       String?               @db.VarChar(50)
+  clock_in_result                                                              Int?
+  clock_out_result                                                             Int?
+  clock_in_location_id                                                         String?               @db.VarChar(50)
+  clock_out_location_id                                                        String?               @db.VarChar(50)
+  hours_of_attendance                                                          Float?                @db.Real
+  department_id                                                                String?               @db.VarChar
+  attendance_locations_attendance_attendance_location_idToattendance_locations attendance_locations? @relation("attendance_attendance_location_idToattendance_locations", fields: [attendance_location_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_ibfk_311")
+  attendance_locations_attendance_clock_in_location_idToattendance_locations   attendance_locations? @relation("attendance_clock_in_location_idToattendance_locations", fields: [clock_in_location_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_ibfk_513")
+  attendance_locations_attendance_clock_out_location_idToattendance_locations  attendance_locations? @relation("attendance_clock_out_location_idToattendance_locations", fields: [clock_out_location_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_ibfk_612")
+  departments                                                                  departments?          @relation(fields: [department_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  employees                                                                    employees             @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_ibfk_410")
+  shift_lists                                                                  shift_lists           @relation(fields: [shift_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_ibfk_214")
+
+  @@unique([date, employee_id], map: "unique_date_employee6")
+  @@index([attendance_location_id], map: "attendance_ibfk_33")
+  @@index([clock_in_location_id], map: "attendance_ibfk_55")
+  @@index([clock_out_location_id], map: "attendance_ibfk_64")
+  @@index([employee_id], map: "employee_id7")
+  @@index([shift_id], map: "shift_id8")
+}
+
+model attendance_group_leaders {
+  attendance_group_id String            @db.VarChar(50)
+  employee_id         String            @db.VarChar(255)
+  attendance_groups   attendance_groups @relation(fields: [attendance_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_group_leaders_ibfk_15")
+  employees           employees         @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_group_leaders_ibfk_24")
+
+  @@id([attendance_group_id, employee_id], map: "attendance_group_leadersPRIMARY3")
+  @@unique([attendance_group_id, employee_id], map: "unique_combination_idx10")
+  @@index([employee_id], map: "employee_id9")
+}
+
+model attendance_group_shifts {
+  attendance_group_id String            @db.VarChar(50)
+  shift_list_id       String            @db.VarChar(50)
+  attendance_groups   attendance_groups @relation(fields: [attendance_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_group_shifts_ibfk_37")
+  shift_lists         shift_lists       @relation(fields: [shift_list_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_group_shifts_ibfk_26")
+
+  @@id([attendance_group_id, shift_list_id], map: "attendance_group_shiftsPRIMARY4")
+  @@unique([attendance_group_id, shift_list_id], map: "unique_combination_idx11")
+  @@index([shift_list_id], map: "shift_list_id12")
+}
+
+model attendance_group_subleaders {
+  attendance_group_id String            @db.VarChar(50)
+  employee_id         String            @db.VarChar(255)
+  attendance_groups   attendance_groups @relation(fields: [attendance_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_group_subleaders_ibfk_28")
+  employees           employees         @relation(fields: [employee_id], references: [id], onDelete: NoAction, map: "attendance_group_subleaders_ibfk_19")
+
+  @@id([attendance_group_id, employee_id], map: "attendance_group_subleadersPRIMARY5")
+  @@index([employee_id], map: "employee_id13")
+}
+
+model attendance_groups {
+  id                          String                        @id(map: "attendance_groupsPRIMARY6") @db.VarChar(50)
+  name                        String?                       @unique(map: "uk_name15") @db.VarChar(50)
+  allow_out_punch             Int?                          @db.SmallInt
+  allow_pc_punch              Int?                          @db.SmallInt
+  calendar_id                 Int?
+  clockIn_need_photo          Int?                          @db.SmallInt
+  effect_time                 DateTime?                     @db.Timestamp(6)
+  face_punch                  Int?                          @db.SmallInt
+  gps_range                   Int?
+  group_type                  Int?
+  hide_staff_punch_time       Int?                          @db.SmallInt
+  out_punch_allowed_hide_addr Int?                          @db.SmallInt
+  out_punch_need_approval     Int?                          @db.SmallInt
+  out_punch_need_photo        Int?                          @db.SmallInt
+  out_punch_need_remark       Int?                          @db.SmallInt
+  rest_clockIn_need_approval  Int?                          @db.SmallInt
+  show_cumulative_time        Int?                          @db.SmallInt
+  show_over_time              Int?                          @db.SmallInt
+  time_zone                   String?                       @db.VarChar(50)
+  punch_type                  Int?
+  updated_at                  DateTime                      @default(now()) @db.Timestamptz(6)
+  created_at                  DateTime                      @default(now()) @db.Timestamptz(6)
+  store_id                    String?                       @db.VarChar(100)
+  attendance_group_leaders    attendance_group_leaders[]
+  attendance_group_shifts     attendance_group_shifts[]
+  attendance_group_subleaders attendance_group_subleaders[]
+  stores                      stores?                       @relation(fields: [store_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_groups_ibfk_13")
+  attendance_locations        attendance_locations[]
+  departments                 departments[]
+
+  @@index([store_id], map: "store_id14")
+}
+
+model attendance_locations {
+  id                                                                 String             @id(map: "attendance_locationsPRIMARY7") @db.VarChar(50)
+  name                                                               String?            @db.VarChar(50)
+  type                                                               Int?
+  latitude                                                           Decimal?           @db.Decimal
+  longitude                                                          Decimal?           @db.Decimal
+  ssid                                                               String?            @db.VarChar(255)
+  bssid                                                              String?            @db.VarChar(255)
+  map_type                                                           Int?
+  address                                                            String?            @db.VarChar(255)
+  ip                                                                 String?            @db.VarChar(255)
+  feature                                                            String?            @db.VarChar(255)
+  gps_range                                                          Int?
+  attendance_group_id                                                String?            @db.VarChar(50)
+  attendance_attendance_attendance_location_idToattendance_locations attendance[]       @relation("attendance_attendance_location_idToattendance_locations")
+  attendance_attendance_clock_in_location_idToattendance_locations   attendance[]       @relation("attendance_clock_in_location_idToattendance_locations")
+  attendance_attendance_clock_out_location_idToattendance_locations  attendance[]       @relation("attendance_clock_out_location_idToattendance_locations")
+  attendance_groups                                                  attendance_groups? @relation(fields: [attendance_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_locations_ibfk_115")
+
+  @@index([attendance_group_id], map: "attendance_locations_ibfk_116")
+}
+
+model bills {
+  bs_id                        BigInt          @id(map: "billsPRIMARY9")
+  bs_code                      String?         @db.VarChar(255)
+  ts_code                      String?         @db.VarChar(255)
+  owo_open_id                  String?         @db.VarChar(255)
+  owo_union_id                 String?         @db.VarChar(255)
+  btpw_user_account            String?         @db.VarChar(255)
+  area_code                    String?         @db.VarChar(100)
+  area_id                      BigInt?
+  area_name                    String?         @db.VarChar(50)
+  point_code                   String?         @db.VarChar(255)
+  point_name                   String?         @db.VarChar(255)
+  people_qty                   Int?
+  open_time                    DateTime?       @db.Timestamp(6)
+  settle_time                  DateTime?       @db.Timestamp(6)
+  settle_biz_date              DateTime?       @db.Date
+  settle_biz_month             String?         @db.VarChar(50)
+  state                        String?         @db.VarChar(50)
+  waiter_code                  String?         @db.VarChar(255)
+  waiter_name                  String?         @db.VarChar(255)
+  salesman_code                String?         @db.VarChar(255)
+  salesman_name                String?         @db.VarChar(255)
+  item_income_total            Decimal?        @db.Decimal
+  item_orig_money              Decimal?        @db.Decimal
+  orig_server_fee              Decimal?        @db.Decimal
+  orig_zdxfbq                  Int?
+  orig_total                   Decimal?        @db.Decimal
+  disc_total                   Decimal?        @db.Decimal
+  disc_money                   Decimal?        @db.Decimal
+  quota_money                  Decimal?        @db.Decimal
+  present_money                Decimal?        @db.Decimal
+  member_money                 Decimal?        @db.Decimal
+  promote_money                Decimal?        @db.Decimal
+  wipe_money                   Decimal?        @db.Decimal
+  income_total                 Decimal?        @db.Decimal
+  not_income_money             Decimal?        @db.Decimal
+  sale_type_id                 Int?
+  sale_type_name               String?         @db.VarChar(50)
+  order_origin_id              Int?
+  order_origin_name            String?         @db.VarChar(50)
+  dinner_type_id               Int?
+  dinner_type_name             String?         @db.VarChar(50)
+  settle_state                 String?         @db.VarChar(50)
+  order_type                   String?         @db.VarChar(50)
+  de_from                      String?         @db.VarChar(50)
+  is_continued_bill            Boolean?
+  is_continued_bill_name       String?         @db.VarChar(50)
+  tax_money                    Decimal?        @db.Decimal
+  order_code                   String?         @db.VarChar(255)
+  center_code                  String?         @db.VarChar(100)
+  center_name                  String?         @db.VarChar(50)
+  brand_code                   String?         @db.VarChar(50)
+  brand_name                   String?         @db.VarChar(50)
+  shop_code                    String?         @db.VarChar(50)
+  shop_id                      String?         @db.VarChar(100)
+  shop_out_code                String?         @db.VarChar(100)
+  shop_name                    String?         @db.VarChar(100)
+  last_total                   Decimal?        @db.Decimal
+  is_give_invoice              String?         @db.VarChar(50)
+  create_time                  DateTime?       @db.Timestamp(6)
+  modify_time                  DateTime?       @db.Timestamp(6)
+  bs_remark                    String?         @db.VarChar(255)
+  team_id                      String?         @db.VarChar(255)
+  member_card_no               String?         @db.VarChar(255)
+  member_id                    String?         @db.VarChar(255)
+  member_name                  String?         @db.VarChar(100)
+  member_mobile                String?         @db.VarChar(100)
+  card_kind_name               String?         @db.VarChar(100)
+  service_fee_income_money     Decimal?        @db.Decimal
+  service_fee_not_income_money Decimal?        @db.Decimal
+  service_fee_last_total       Decimal?        @db.Decimal
+  zdxf_income_money            Decimal?        @db.Decimal
+  third_serial                 String?         @db.VarChar(255)
+  table_qty                    Int?
+  delflg                       Int?
+  stores                       stores?         @relation(fields: [shop_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "bills_ibfk_116")
+  settledetails                settledetails[]
+  solditems                    solditems[]
+
+  @@index([shop_id], map: "shop_id17")
+}
+
+model brands {
+  id               String             @id(map: "brandsPRIMARY10") @db.VarChar(50)
+  name             String             @db.VarChar(50)
+  tcsl_id          String?            @unique
+  is_operation     Boolean
+  status           Int
+  department_id    String?            @db.VarChar
+  departments      departments?       @relation(fields: [department_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  brands_employees brands_employees[]
+  fooditems        fooditems[]
+  stores           stores[]
+}
+
+model departments {
+  id                                             String                  @id(map: "departmentsPRIMARY13") @db.VarChar(255)
+  name                                           String?                 @db.VarChar(100)
+  manager_id                                     String?                 @db.VarChar(255)
+  small_department_name                          String?                 @db.VarChar(50)
+  parent_department_id                           String?                 @db.VarChar(100)
+  status                                         Int?                    @db.SmallInt
+  ranking                                        Int?
+  attendance_group_id                            String?                 @db.VarChar(50)
+  store_id                                       String?                 @db.VarChar(100)
+  is_store                                       Int?                    @db.SmallInt
+  attendance                                     attendance[]
+  brands                                         brands[]
+  employees_departments_manager_idToemployees    employees?              @relation("departments_manager_idToemployees", fields: [manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "departments_ibfk_120")
+  attendance_groups                              attendance_groups?      @relation(fields: [attendance_group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "departments_ibfk_219")
+  stores_departments_store_idTostores            stores?                 @relation("departments_store_idTostores", fields: [store_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "departments_ibfk_321")
+  departments                                    departments?            @relation("departmentsTodepartments", fields: [parent_department_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  other_departments                              departments[]           @relation("departmentsTodepartments")
+  departments_employees                          departments_employees[]
+  departments_stores                             departments_stores?
+  employees_employees_department_idTodepartments employees[]             @relation("employees_department_idTodepartments")
+  stores_stores_department_idTodepartments       stores[]                @relation("stores_department_idTodepartments")
+
+  @@index([attendance_group_id], map: "departments_ibfk_218")
+  @@index([manager_id], map: "manager20")
+  @@index([store_id], map: "store_id19")
+}
+
+model departments_stores {
+  department_id String      @id(map: "departmentstoresPRIMARY14") @db.VarChar(255)
+  shop_id       String      @db.VarChar(100)
+  stores        stores      @relation(fields: [shop_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "departmentstores_ibfk_218")
+  departments   departments @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "departmentstores_ibfk_117")
+
+  @@index([department_id], map: "department_id22")
+  @@index([shop_id], map: "shop_id21")
+}
+
+model dsstorebills {
+  OtherSideName       String?      @db.VarChar(500)
+  ShopName            String?      @db.VarChar(100)
+  ItemBigClassName    String?      @db.VarChar(100)
+  ItemSpec            String?      @db.VarChar(100)
+  SellTaxes           Decimal?     @db.Decimal
+  shopJoinFlag        Int?
+  ItemSmallClassCode  String?      @db.VarChar(100)
+  ArriveMoney         Decimal?     @db.Decimal
+  StoreCode           String       @db.VarChar(100)
+  outputRate          Decimal?     @db.Decimal
+  StoreBillRemark     String?
+  OutMainAmount       Decimal?     @db.Decimal
+  ItemSign            String?      @db.VarChar(50)
+  ShopCode            String?      @db.VarChar(100)
+  TaxMoney            Decimal?     @db.Decimal
+  ztSupplierID        String?      @db.VarChar(500)
+  StoreBillDTID       String       @db.VarChar(500)
+  ztSupplierName      String?      @db.VarChar(100)
+  modifyDate          String?      @db.VarChar(100)
+  StoreName           String?      @db.VarChar(100)
+  StoreBillIDRemark   String?
+  MainUnit            String?      @db.VarChar(50)
+  GiftFlag            Boolean?
+  OutStoreMoney       Decimal?     @db.Decimal
+  ItemID              String?      @db.VarChar(500)
+  ItemSmallClassName  String?      @db.VarChar(100)
+  BillNO              String?      @db.VarChar(255)
+  StoreBillReState    Boolean?
+  BusUser             String?      @db.VarChar(100)
+  Taxes               Decimal?     @db.Decimal
+  BatchCode           String?      @db.VarChar(500)
+  InStoreMoney        Decimal?     @db.Decimal
+  isOut               Int?
+  ShopID              String?      @db.VarChar(500)
+  MakeTime            String?      @db.VarChar(100)
+  BillBusType         String?      @db.VarChar(100)
+  processMoney        Decimal?     @db.Decimal
+  ItemCode            String?      @db.VarChar(100)
+  PushOutStoreMoney   Decimal?     @db.Decimal
+  InMainAmount        Decimal?     @db.Decimal
+  PushOutStoreAmount  Decimal?     @db.Decimal
+  StoreBillID         String?      @db.VarChar(500)
+  SellIncludeTaxMoney Decimal?     @db.Decimal
+  OutBusAmount        Decimal?     @db.Decimal
+  referencePrice      Decimal?     @db.Decimal
+  arriveAssistAmount  Decimal?     @db.Decimal
+  OtherSideType       String?      @db.VarChar(100)
+  PushInStoreMoney    Decimal?     @db.Decimal
+  transMoney          Decimal?     @db.Decimal
+  yield               Decimal?     @db.Decimal
+  ArriveAmount        Decimal?     @db.Decimal
+  ItemName            String?      @db.VarChar(100)
+  SysBatchCode        Int?
+  ztSupplierCode      String?      @db.VarChar(100)
+  createDate          String?      @db.VarChar(100)
+  auditDate           DateTime?    @db.Date
+  OtherSideID         String?      @db.VarChar(500)
+  BillType            String?      @db.VarChar(100)
+  SellTaxMoney        Decimal?     @db.Decimal
+  BillBusTypeId       String?      @db.VarChar(100)
+  PushInStoreAmount   Decimal?     @db.Decimal
+  InBusAmount         Decimal?     @db.Decimal
+  busDate             String?      @db.VarChar(100)
+  APYear              Int?
+  ItemBigClassCode    String?      @db.VarChar(500)
+  SaleMoney           Decimal?     @db.Decimal
+  StoreID             String?      @db.VarChar(500)
+  ItemAbc             String?      @db.VarChar(50)
+  referenceMoney      Decimal?     @db.Decimal
+  APMonth             Int?
+  OtherSideCode       String?      @db.VarChar(100)
+  BusUnit             String?      @db.VarChar(100)
+  IncludeTaxMoney     Decimal?     @db.Decimal
+  ParentBillNO        String?      @db.VarChar(500)
+  supplyitems         supplyitems? @relation(fields: [ItemID], references: [itemId], onDelete: NoAction, onUpdate: NoAction, map: "dsstorebills_ibfk_122")
+
+  @@id([StoreBillDTID, StoreCode])
+}
+
+model employees {
+  id                                               String                        @id(map: "employeesPRIMARY18") @db.VarChar(255)
+  name                                             String                        @db.VarChar(50)
+  employee_type                                    Int?                          @db.SmallInt
+  status                                           Int?                          @db.SmallInt
+  department_id                                    String?                       @db.VarChar(255)
+  id_number                                        String?                       @db.VarChar(100)
+  bank_account_number                              String?                       @db.VarChar(100)
+  bank_name                                        String?                       @db.VarChar(100)
+  birthday                                         DateTime?                     @db.Date
+  hire_date                                        DateTime?                     @db.Date
+  manager_id                                       String?                       @db.VarChar(255)
+  salary_type                                      String?                       @db.VarChar(50)
+  salary_account                                   String?                       @db.VarChar(50)
+  work_age_type                                    String?                       @default("无工龄") @db.VarChar(50)
+  basic_salary                                     Decimal?                      @db.Decimal
+  basic_salary_monthly                             Decimal?                      @db.Decimal
+  mobile                                           String?                       @unique(map: "unique_mobile27") @db.VarChar(50)
+  user_id                                          String?                       @db.VarChar(50)
+  open_id                                          String?                       @db.VarChar(255)
+  health_card_no                                   String?                       @db.VarChar(255)
+  health_card_start                                DateTime?                     @db.Date
+  health_card_end                                  DateTime?                     @db.Date
+  health_card_image                                String?                       @db.VarChar(255)
+  job_title                                        String?                       @default("无信息") @db.VarChar(50)
+  avatar                                           String?                       @db.VarChar(500)
+  isAdmin                                          Int                           @default(0) @db.SmallInt
+  application                                      Int?
+  application_status                               Int?
+  cancel_onboarding_notes                          String?                       @db.VarChar(255)
+  cancel_onboarding_reason                         Int?
+  created_at                                       DateTime                      @default(now()) @db.Timestamptz(6)
+  email                                            String?                       @db.VarChar(100)
+  employee_form_status                             Int?
+  employee_no                                      String?                       @db.VarChar(255)
+  en_name                                          String?                       @db.VarChar(100)
+  ethnicity                                        Int?
+  family_address                                   String?                       @db.VarChar(255)
+  entered_workforce_date                           DateTime?                     @db.Date
+  hukou_location                                   String?                       @db.VarChar(255)
+  hukou_type                                       Int?
+  id_type                                          Int?
+  last_day                                         DateTime?                     @db.Date
+  marital_status                                   Int?                          @db.SmallInt
+  native_region                                    Json?                         @db.Json
+  primary_emergency_contact                        Json?                         @db.Json
+  probation_months                                 Int?
+  provident_fund_account                           String?                       @db.VarChar(255)
+  updated_at                                       DateTime                      @default(now()) @db.Timestamptz(6)
+  work_location                                    Json?                         @db.Json
+  personal_email                                   String?                       @db.VarChar(100)
+  id_photo                                         String?                       @db.VarChar(255)
+  id_photo_em_side                                 String?                       @db.VarChar(255)
+  id_photo_po_side                                 String?                       @db.VarChar(255)
+  is_tenant_manager                                Int?                          @default(0) @db.SmallInt
+  verification_code                                String?                       @db.VarChar(50)
+  departure_type                                   Int?
+  departure_notes                                  String?                       @db.VarChar(255)
+  medical_insurance                                Int?
+  actual_conversion_time                           DateTime?                     @db.Date
+  actual_overboard_time                            DateTime?                     @db.Date
+  overboard_note                                   String?
+  resignation_handover                             String?                       @db.VarChar
+  notice_termination_agreement                     String?                       @db.VarChar
+  screenshot                                       String?                       @db.VarChar
+  is_three_days_leave                              Int?                          @db.SmallInt
+  gender_id                                        Int?                          @db.SmallInt
+  has_insurance                                    Boolean                       @default(false)
+  insurance_start_date                             DateTime?                     @db.Date
+  social_security_number                           Int?
+  social_security_account                          String?                       @db.VarChar
+  attendance                                       attendance[]
+  attendance_group_leaders                         attendance_group_leaders[]
+  attendance_group_subleaders                      attendance_group_subleaders[]
+  brands_employees                                 brands_employees[]
+  departments_departments_manager_idToemployees    departments[]                 @relation("departments_manager_idToemployees")
+  departments_employees                            departments_employees[]
+  employee_attachments                             employee_attachments[]
+  employee_insurance                               employee_insurance[]
+  departments_employees_department_idTodepartments departments?                  @relation("employees_department_idTodepartments", fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "employees_ibfk_125")
+  employees                                        employees?                    @relation("employeesToemployees", fields: [manager_id], references: [id], onDelete: NoAction)
+  other_employees                                  employees[]                   @relation("employeesToemployees")
+  employees_roles                                  employees_roles[]
+  monthlysalary                                    monthlysalary[]
+  store_employee                                   store_employee[]
+
+  @@index([department_id], map: "department31")
+}
+
+model employees_roles {
+  employee_id String    @db.VarChar(255)
+  role_id     String    @db.VarChar(50)
+  employees   employees @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles       roles     @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([role_id, employee_id], map: "employee_rolesPRIMARY17")
+  @@unique([employee_id, role_id], map: "unique_combination_idx25")
+}
+
+model foodcategories {
+  brand_code          String?     @db.VarChar(50)
+  create_shop_code    String?     @db.VarChar(50)
+  create_time         DateTime?   @db.Timestamp(6)
+  level               Int?
+  create_shop_name    String?     @db.VarChar(50)
+  class_id            BigInt      @id(map: "foodcategoriesPRIMARY20")
+  modify_time         DateTime?   @db.Timestamp(6)
+  brand_name          String?     @db.VarChar(50)
+  is_create_temp_item Int?        @db.SmallInt
+  deflag              Int?
+  center_name         String?     @db.VarChar(50)
+  center_code         String?     @db.VarChar(50)
+  parent_id           BigInt?
+  class_name          String?     @db.VarChar(100)
+  class_code          String?     @db.VarChar(100)
+  fooditems           fooditems[]
+}
+
+model fooditems {
+  item_id            String          @id(map: "fooditemsPRIMARY21")
+  item_code          Int?
+  item_name          String?         @db.VarChar(100)
+  unit_id            String?         @db.VarChar(500)
+  unit_name          String?         @db.VarChar(100)
+  std_price          Decimal?        @db.Decimal
+  big_class_id       BigInt?
+  small_class_id     BigInt?
+  is_package         Boolean?
+  is_temp_item       Boolean?
+  enable_multi_size  Boolean?
+  pkg_type           Int?
+  is_enable          Boolean?
+  deflg              Int?
+  center_code        String?         @db.VarChar(100)
+  center_name        String?         @db.VarChar(100)
+  brand_id           String?
+  brand_code         String?         @db.VarChar(100)
+  brand_name         String?         @db.VarChar(100)
+  shop_code          String?         @db.VarChar(100)
+  shop_name          String?         @db.VarChar(100)
+  create_time        DateTime?       @db.Timestamp(6)
+  modify_time        DateTime?       @db.Timestamp(6)
+  big_pic_url        String?         @db.VarChar(500)
+  small_pic_url      String?         @db.VarChar(500)
+  gif_pic_url        String?         @db.VarChar(500)
+  video_url          String?         @db.VarChar(500)
+  big_pic3_url       String?         @db.VarChar(500)
+  barcode            String?         @db.VarChar(500)
+  english_name       String?         @db.VarChar(100)
+  intro              String?
+  salesRevenueTypeId String?         @db.VarChar(100)
+  auxiliary_unit_id  String?         @db.VarChar(100)
+  zxjType            String?         @db.VarChar(100)
+  pungencyDegree     String?         @db.VarChar(100)
+  brand_item_code    String?         @db.VarChar(100)
+  brand_item_name    String?         @db.VarChar(100)
+  aid_code           String?         @db.VarChar(100)
+  brands             brands?         @relation(fields: [brand_id], references: [tcsl_id], onDelete: NoAction, onUpdate: NoAction)
+  foodcategories     foodcategories? @relation(fields: [small_class_id], references: [class_id], onDelete: NoAction, onUpdate: NoAction, map: "fooditems_ibfk_136")
+  ingredients        ingredients[]
+  solditems          solditems[]
+
+  @@index([small_class_id], map: "small_class_id35")
+}
+
+model ingredients {
+  fooditem_id   String?
+  supplyitem_id String?      @db.VarChar(500)
+  qty           Decimal?     @db.Decimal
+  id            Int          @id(map: "ingredientsPRIMARY23")
+  fooditems     fooditems?   @relation(fields: [fooditem_id], references: [item_id], onDelete: NoAction, onUpdate: NoAction, map: "ingredients_ibfk_137")
+  supplyitems   supplyitems? @relation(fields: [supplyitem_id], references: [itemId], onDelete: NoAction, onUpdate: NoAction, map: "ingredients_ibfk_238")
+
+  @@unique([fooditem_id, supplyitem_id], map: "fooditem_id36")
+  @@index([supplyitem_id], map: "supplyitem_id37")
+}
+
+model nav_bg_categories {
+  id                   Int                 @id(map: "nav_bg_categoriesPRIMARY28")
+  name                 String?             @db.VarChar(50)
+  nav_xl_categories_id Int?
+  nav_xl_categories    nav_xl_categories?  @relation(fields: [nav_xl_categories_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "nav_bg_categories_ibfk_144")
+  nav_sm_categories    nav_sm_categories[]
+
+  @@index([nav_xl_categories_id], map: "nav_xl_categories_id43")
+}
+
+model nav_sm_categories {
+  id                     Int                      @id(map: "nav_sm_categoriesPRIMARY29")
+  name                   String?                  @db.VarChar(50)
+  nav_bg_categories_id   Int?
+  url                    String?                  @db.VarChar(255)
+  side_nav_visible       Int?                     @db.SmallInt
+  nav_bg_categories      nav_bg_categories?       @relation(fields: [nav_bg_categories_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "nav_sm_categories_ibfk_145")
+  role_nav_sm_categories role_nav_sm_categories[]
+
+  @@index([nav_bg_categories_id], map: "big_category44")
+}
+
+model nav_xl_categories {
+  id                Int                 @id(map: "nav_xl_categoriesPRIMARY30")
+  name              String?             @db.VarChar(50)
+  url               String?             @db.VarChar(500)
+  nav_bg_categories nav_bg_categories[]
+}
+
+model organstores {
+  storeMode  String?   @db.VarChar(100)
+  modifyDate DateTime? @db.Timestamp(6)
+  storeName  String?   @db.VarChar(50)
+  storeId    String?   @db.VarChar(100)
+  enableFlag Int?
+  parentId   String?   @db.VarChar(100)
+  storeCode  String?   @db.VarChar(100)
+  fkc        String?   @db.VarChar(50)
+  id         String    @id(map: "organstoresPRIMARY32") @default("uuid()") @db.VarChar(100)
+}
+
+model role_nav_sm_categories {
+  role_id            String            @db.VarChar(50)
+  nav_sm_category_id Int
+  roles              roles             @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_nav_sm_categories_ibfk_147")
+  nav_sm_categories  nav_sm_categories @relation(fields: [nav_sm_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_nav_sm_categories_ibfk_248")
+
+  @@id([role_id, nav_sm_category_id], map: "role_nav_sm_categoriesPRIMARY34")
+  @@index([nav_sm_category_id], map: "nav_sm_category_id46")
+}
+
+model role_scope {
+  id       String  @id(map: "role_scopePRIMARY35") @db.VarChar(50)
+  role_id  String? @db.VarChar(50)
+  scope_id String? @db.VarChar(50)
+  roles    roles?  @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_scope_ibfk_149")
+  scopes   scopes? @relation(fields: [scope_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "role_scope_ibfk_250")
+
+  @@unique([scope_id, role_id], map: "unique_combination_idx48")
+  @@index([role_id], map: "role_id47")
+}
+
+model roles {
+  id                     String                   @id(map: "rolesPRIMARY36") @db.VarChar(50)
+  name                   String?                  @db.VarChar(50)
+  label                  String?                  @db.VarChar(50)
+  ranking                Int?
+  employees_roles        employees_roles[]
+  role_nav_sm_categories role_nav_sm_categories[]
+  role_scope             role_scope[]
+}
+
+model salesitemsdata {
+  item_name        String   @db.VarChar(50)
+  last_total       Decimal? @db.Decimal
+  income_money     Decimal? @db.Decimal
+  small_class_name String?  @db.VarChar(50)
+  date             DateTime @db.Date
+  brand            String   @db.VarChar(50)
+  store            String   @db.VarChar(50)
+  bs_id            Decimal? @db.Decimal(20, 0)
+  de_from          String?  @db.VarChar(10)
+  item_id          Decimal? @db.Decimal(20, 0)
+  small_class_id   Decimal? @db.Decimal(20, 0)
+  last_qty         Int?
+  id               String   @id(map: "salesitemsdataPRIMARY37") @default("uuid()") @db.VarChar(100)
+}
+
+model scope_nav_sm_categories {
+  id                 Int     @id(map: "scope_nav_sm_categoriesPRIMARY38")
+  scope_id           String? @db.VarChar(50)
+  nav_sm_category_id Int?
+}
+
+model scopes {
+  id              String       @id(map: "scopesPRIMARY39") @db.VarChar(50)
+  name            String?      @db.VarChar(50)
+  parent_scope_id String?      @db.VarChar(50)
+  role_scope      role_scope[]
+}
+
+model settledetails {
+  ts_id            BigInt?
+  payway_code      String?  @db.VarChar(50)
+  payway_id        BigInt?
+  modify_time      BigInt?
+  payway_name      String?  @db.VarChar(50)
+  pay_money        Decimal? @db.Decimal
+  income_money     Decimal? @db.Decimal
+  delflg           Int?
+  settle_state     Int?
+  pw_id            BigInt   @id
+  payway_out_code  String?  @db.VarChar(255)
+  bs_id            BigInt?
+  consumer_name    String?  @db.VarChar(50)
+  card_no          String?  @db.VarChar(255)
+  consumer_code    String?  @db.VarChar(255)
+  crm_mobile       String?  @db.VarChar(255)
+  not_income_money Decimal? @db.Decimal
+  bills            bills?   @relation(fields: [bs_id], references: [bs_id], onDelete: NoAction, onUpdate: NoAction, map: "settledetails_ibfk_151")
+}
+
+model shift_lists {
+  id                      String                    @id(map: "shift_listsPRIMARY41") @db.VarChar(50)
+  flexible_minutes        Int?
+  is_flexible             Int?                      @db.SmallInt
+  no_need_off             Int?                      @db.SmallInt
+  punch_times             Int?
+  shift_name              String?                   @db.VarChar(50)
+  created_by              String?                   @db.VarChar(255)
+  created_at              DateTime                  @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime                  @default(now()) @db.Timestamptz(6)
+  early_minutes_as_early  Int?
+  early_minutes_as_lack   Int?
+  late_minutes_as_lack    Int?
+  late_minutes_as_late    Int?
+  off_delay_minutes       Int?
+  off_time                DateTime?                 @db.Time(6)
+  on_advance_minutes      Int?
+  on_time                 DateTime?                 @db.Time(6)
+  scheduled_length_day    Decimal?                  @db.Decimal
+  scheduled_length_hour   Decimal?                  @db.Decimal
+  attendance              attendance[]
+  attendance_group_shifts attendance_group_shifts[]
+
+  @@index([created_by], map: "created_by50")
+}
+
+model solditems {
+  rz_name               String?    @db.VarChar(50)
+  deptName              String?    @db.VarChar(50)
+  orig_price            Decimal?   @db.Decimal
+  last_qty              Decimal?   @db.Decimal
+  item_type             Int?
+  small_class_out_code  String?    @db.VarChar(255)
+  size_name             String?    @db.VarChar(50)
+  income_money          Decimal?   @db.Decimal
+  delflg                Int?
+  disc_name             String?    @db.VarChar(50)
+  wipe_money            Decimal?   @db.Decimal
+  big_class_out_code    String?    @db.VarChar(255)
+  tax_rate_takesale     Decimal?   @db.Decimal
+  size_id               BigInt?
+  orig_subtotal         Decimal?   @db.Decimal
+  create_time           DateTime?  @db.Timestamp(6)
+  small_class_id        BigInt?
+  big_class_id          BigInt?
+  deptId                String?    @db.VarChar(255)
+  disc_fix              Decimal?   @db.Decimal
+  tax_rate_dinein       Decimal?   @db.Decimal
+  unit_name             String?    @db.VarChar(50)
+  small_class_code      String?    @db.VarChar(255)
+  promote_money         Decimal?   @db.Decimal
+  method_id             String?    @db.VarChar(255)
+  present_money         Decimal?   @db.Decimal
+  big_class_name        String?    @db.VarChar(50)
+  deptCode              String?    @db.VarChar(255)
+  last_price            Decimal?   @db.Decimal
+  not_income_money      Decimal?   @db.Decimal
+  item_code             String?    @db.VarChar(255)
+  tax_rate_takeout      Decimal?   @db.Decimal
+  item_type_name        String?    @db.VarChar(50)
+  pkg_flg               Int?
+  modify_time           DateTime?  @db.Timestamp(6)
+  last_total            Decimal?   @db.Decimal
+  sales_revenue_type_id String?    @db.VarChar(50)
+  last_make_fee         Decimal?   @db.Decimal
+  bs_id                 BigInt?
+  item_aid_code         String?    @db.VarChar(255)
+  big_class_code        String?    @db.VarChar(50)
+  disc_money            Decimal?   @db.Decimal
+  member_money          Decimal?   @db.Decimal
+  item_id               String?
+  small_class_name      String?    @db.VarChar(50)
+  sc_id                 BigInt     @id
+  item_name             String?    @db.VarChar(100)
+  settle_time           DateTime?  @db.Timestamp(6)
+  sale_price            Decimal?   @db.Decimal
+  is_change_price       String?    @db.VarChar(50)
+  method_text           String?
+  pkg_flg_name          String?    @db.VarChar(50)
+  disc_flg              Int?
+  pkg_sc_id             Int?
+  size_code             String?    @db.VarChar(50)
+  id                    Int?
+  bills                 bills?     @relation(fields: [bs_id], references: [bs_id], onDelete: NoAction, onUpdate: NoAction, map: "solditems_ibfk_153")
+  fooditems             fooditems? @relation(fields: [item_id], references: [item_id], onDelete: NoAction, onUpdate: NoAction, map: "solditems_ibfk_252")
+}
+
+model store_employee {
+  store_id    String    @db.VarChar(100)
+  employee_id String    @db.VarChar(255)
+  employees   employees @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "store_employee_ibfk_260")
+  stores      stores    @relation(fields: [store_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "store_employee_ibfk_161")
+
+  @@id([store_id, employee_id], map: "store_employeePRIMARY43")
+  @@index([employee_id], map: "employee_id53")
+}
+
+model stores {
+  name                                          String?              @db.VarChar(100)
+  store                                         String?              @db.VarChar(100)
+  id                                            String               @id(map: "storesPRIMARY46") @db.VarChar
+  supply_shop_id                                String?              @db.VarChar(500)
+  salary_account                                String?              @db.VarChar(50)
+  seat_count                                    Int?
+  table_count                                   Int?
+  status                                        Int?
+  is_operation                                  Int?                 @db.SmallInt
+  department_id                                 String?              @db.VarChar(255)
+  brand_id                                      String               @db.VarChar(50)
+  attendance_groups                             attendance_groups[]
+  bills                                         bills[]
+  departments_departments_store_idTostores      departments[]        @relation("departments_store_idTostores")
+  departments_stores                            departments_stores[]
+  store_employee                                store_employee[]
+  departments_stores_department_idTodepartments departments?         @relation("stores_department_idTodepartments", fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "stores_ibfk_158")
+  brands                                        brands               @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "stores_ibfk_259")
+
+  @@index([brand_id], map: "brand_id59")
+  @@index([department_id], map: "department_id58")
+}
+
+model suppliers {
+  supplierName   String?   @db.VarChar(100)
+  supplierId     String    @id(map: "suppliersPRIMARY48") @db.VarChar(500)
+  modifyDate     DateTime? @db.Timestamp(6)
+  supplierTypeID String?   @db.VarChar(500)
+  supplierState  Int?
+  supplierCode   String?   @db.VarChar(50)
+}
+
+model supplyitems {
+  reportUnit                                                 String?          @db.VarChar(50)
+  itemCode                                                   String?          @db.VarChar(100)
+  sign                                                       String?          @db.VarChar(100)
+  itemBigTypeName                                            String?          @db.VarChar(50)
+  netRate                                                    Decimal?         @db.Decimal
+  spec                                                       String?
+  expFlag                                                    Int?
+  referPrice                                                 Decimal?         @db.Decimal
+  packFlag                                                   Int?
+  itemName                                                   String?          @db.VarChar(100)
+  storeAgeFlag                                               Int?
+  costType                                                   Int?
+  enableFlag                                                 Int?
+  createDate                                                 DateTime?        @db.Timestamp(6)
+  mainUnit                                                   String?          @db.VarChar(50)
+  abc                                                        String?          @db.VarChar(50)
+  modifyDate                                                 DateTime?        @db.Timestamp(6)
+  referCost                                                  Decimal?         @db.Decimal
+  origin_place                                               String?          @db.VarChar(50)
+  itemTypeCode                                               String?          @db.VarChar(50)
+  itemBigTypeCode                                            String?          @db.VarChar(50)
+  reportUnitRatio                                            Decimal?         @db.Decimal
+  itemBigTypeID                                              String?          @db.VarChar(500)
+  itemId                                                     String           @id(map: "supplyitemsPRIMARY49") @db.VarChar(500)
+  expDays                                                    Int?
+  mrpExcuteType                                              Int?
+  assistUnitRatio                                            Decimal?         @db.Decimal
+  assistNo                                                   String?          @db.VarChar(100)
+  itemTypeName                                               String?          @db.VarChar(100)
+  assistUnitFlag                                             Int?
+  itemTypeID                                                 String?          @db.VarChar(500)
+  itemImage                                                  String?          @db.VarChar(500)
+  dsstorebills                                               dsstorebills[]
+  ingredients                                                ingredients[]
+  supplyitemtypes_supplyitems_itemBigTypeIDTosupplyitemtypes supplyitemtypes? @relation("supplyitems_itemBigTypeIDTosupplyitemtypes", fields: [itemBigTypeID], references: [itemTypeId], onDelete: NoAction, onUpdate: NoAction)
+  supplyitemtypes_supplyitems_itemTypeIDTosupplyitemtypes    supplyitemtypes? @relation("supplyitems_itemTypeIDTosupplyitemtypes", fields: [itemTypeID], references: [itemTypeId], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model supplyitemtypes {
+  itemTypeName                                           String?       @db.VarChar(100)
+  parentTypeID                                           String?       @db.VarChar(500)
+  itemTypeId                                             String        @id @db.VarChar(500)
+  modifyDate                                             DateTime?     @db.Timestamp(6)
+  itemTypeCode                                           String?       @db.VarChar(100)
+  supplyitems_supplyitems_itemBigTypeIDTosupplyitemtypes supplyitems[] @relation("supplyitems_itemBigTypeIDTosupplyitemtypes")
+  supplyitems_supplyitems_itemTypeIDTosupplyitemtypes    supplyitems[] @relation("supplyitems_itemTypeIDTosupplyitemtypes")
+}
+
+model supplyitemunits {
+  sendFlag     Int?
+  itemId       String?   @db.VarChar(500)
+  itemUnitName String?   @db.VarChar(100)
+  modifyDate   DateTime? @db.Timestamp(6)
+  reportFlag   Int?
+  itemUnitID   String?   @db.VarChar(500)
+  pickFlag     Int?
+  UnitRation   Decimal?  @db.Decimal
+  enableFlag   Int?
+  checkFlag    Int?
+  id           Bytes     @id(map: "supplyitemunitsPRIMARY51") @default("dXVpZF90b19iaW4odXVpZCgpKQ==")
+  uid          Bytes     @default("dXVpZF90b19iaW4odXVpZCgpKQ==")
+}
+
+model supplyrdc {
+  rdcCode    String?   @db.VarChar(255)
+  modifyDate DateTime? @db.Timestamp(6)
+  rdcId      String    @id(map: "supplyrdcPRIMARY52") @db.VarChar(500)
+  enableFlag Int?
+  parentid   String?   @db.VarChar(500)
+  rdcName    String?   @db.VarChar(500)
+}
+
+model employee_insurance {
+  id                              String    @id @db.VarChar
+  month                           DateTime? @db.Date
+  employee_id                     String    @db.VarChar
+  work_injury_base                Decimal?  @db.Decimal
+  medical_base                    Decimal?  @db.Decimal
+  pension_base                    Decimal?  @db.Decimal
+  unemployment_base               Decimal?  @db.Decimal
+  heating_base                    Decimal?  @db.Decimal
+  corp_retirement_insurance       Decimal?  @db.Decimal
+  corp_medical_insurance          Decimal?  @db.Decimal
+  corp_major_medical              Decimal?  @db.Decimal
+  corp_maternity_insurance        Decimal?  @db.Decimal
+  corp_unemployment_insurance     Decimal?  @db.Decimal
+  corp_work_injury                Decimal?  @db.Decimal
+  corp_heating                    Decimal?  @db.Decimal
+  corp_pay                        Decimal?  @db.Decimal
+  personal_pension_insurance      Decimal?  @db.Decimal
+  personal_medical_insurance      Decimal?  @db.Decimal
+  personal_unemployment_insurance Decimal?  @db.Decimal
+  personal_major_medical          Decimal?  @db.Decimal
+  personal_pay                    Decimal?  @db.Decimal
+  payment_start_date              DateTime? @db.Date
+  personal_housing_fund           Decimal?  @db.Decimal
+  corp_housing_fund               Decimal?  @db.Decimal
+  personal_fund_balance           Decimal?  @db.Decimal
+  employees                       employees @relation(fields: [employee_id], references: [id], onUpdate: Restrict)
+
+  @@unique([month, employee_id])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model solditems_summary {
+  item_id      String?
+  income_money Decimal? @db.Decimal
+  last_qty     Decimal? @db.Decimal
+  last_price   Decimal? @db.Decimal
+
+  @@ignore
+}
+
+model monthlysalary {
+  id                          String    @id @db.VarChar
+  employee_id                 String    @db.VarChar
+  month                       String
+  penalty_deduct              Decimal?  @db.Decimal
+  performance                 Decimal?  @db.Decimal
+  statutory_holiday           Decimal?  @db.Decimal
+  other_subsidies             Decimal?  @db.Decimal
+  complaint                   Decimal?  @db.Decimal
+  attendance_deduction        Decimal?  @db.Decimal
+  deductions_for_unpaid_leave Decimal?  @db.Decimal
+  other_deductions            Decimal?  @db.Decimal
+  personal_tax                Decimal?  @db.Decimal
+  employees                   employees @relation(fields: [employee_id], references: [id], onUpdate: Restrict)
+}
+
+model delete_log {
+  id         Int       @id @default(autoincrement())
+  timestamp  DateTime? @db.Timestamp(6)
+  username   String?
+  query      String?
+  ip_address String?   @db.Inet
+}
+
+model departments_employees {
+  department_id String      @db.VarChar
+  employee_id   String      @db.VarChar
+  departments   departments @relation(fields: [department_id], references: [id], onUpdate: Restrict)
+  employees     employees   @relation(fields: [employee_id], references: [id], onUpdate: Restrict)
+
+  @@id([department_id, employee_id])
+}
+
+model brands_employees {
+  brand_id    String    @db.VarChar
+  employee_id String    @db.VarChar
+  brands      brands    @relation(fields: [brand_id], references: [id], onUpdate: Restrict)
+  employees   employees @relation(fields: [employee_id], references: [id], onUpdate: Restrict)
+
+  @@id([brand_id, employee_id])
+}
+
+model employee_attachments {
+  id           String     @id(map: "user_attachmentsPRIMARY55") @db.VarChar(100)
+  employee_id  String?    @db.VarChar(255)
+  kind         String?    @db.VarChar(100)
+  file_name    String?    @db.VarChar(100)
+  path         String?    @db.VarChar(100)
+  created_time DateTime   @default(now()) @db.Timestamptz(6)
+  employees    employees? @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_attachments_employee_id_fkey")
+
+  @@index([employee_id], map: "employee_id60")
+}

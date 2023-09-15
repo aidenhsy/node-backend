@@ -1,0 +1,271 @@
+type Query {
+  """
+  获取班次列表
+  """
+  shiftLists(
+    """
+    获取数据数量
+    """
+    take: Int!
+    """
+    跳过数据数量
+    """
+    skip: Int!
+    """
+    筛选条件
+    """
+    filter: ShiftListFilter
+  ): ShiftListRes
+
+  shiftById(id: String!): ShiftList
+}
+
+type Mutation {
+  """
+  创建班次
+  """
+  createShift(createShiftInput: CreateShiftInput): ShiftList
+  """
+  删除班次
+  """
+  deleteShift(shift_id: String!): ShiftList
+  """
+  更新班次
+  """
+  updateShift(shift_id: String!, updateFields: UpdateShiftInput!): ShiftList
+}
+
+input CreateShiftInput {
+  """
+  早退多久记为早退
+  """
+  early_minutes_as_early: Int!
+  """
+  早退多久记为缺卡
+  """
+  early_minutes_as_lack: Int!
+  """
+  晚到多久记为缺卡
+  """
+  late_minutes_as_lack: Int
+  """
+  晚到多久记为迟到
+  """
+  late_minutes_as_late: Int
+  """
+  不需要打下班卡
+  """
+  no_need_off: Boolean
+  """
+  最晚多久可打下班卡
+  """
+  off_delay_minutes: Int
+  """
+  下班时间
+  """
+  off_time: DateScalar!
+  """
+  最早多久可打上班卡
+  """
+  on_advance_minutes: Int
+  """
+  上班时间
+  """
+  on_time: DateScalar!
+  """
+  班次名称
+  """
+  shift_name: String!
+  """
+  关联考勤组ID
+  """
+  attendance_group_id: String
+}
+
+input ShiftListFilter {
+  """
+  使用班次名称模糊筛选
+  """
+  search_term: String
+  """
+  创建人的id
+  """
+  created_by: String
+  """
+  排序方式
+  """
+  sort_by: SortOption
+}
+
+enum SortOption {
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+}
+
+input UpdateShiftInput {
+  """
+  早退多久记为早退
+  """
+  early_minutes_as_early: Int
+  """
+  早退多久记为缺卡
+  """
+  early_minutes_as_lack: Int
+  """
+  晚到多久记为缺卡
+  """
+  late_minutes_as_lack: Int
+  """
+  晚到多久记为迟到
+  """
+  late_minutes_as_late: Int
+  """
+  不需要打下班卡
+  """
+  no_need_off: Boolean
+  """
+  最晚多久可打下班卡
+  """
+  off_delay_minutes: Int
+  """
+  下班时间
+  """
+  off_time: DateScalar
+  """
+  最早多久可打上班卡
+  """
+  on_advance_minutes: Int
+  """
+  上班时间
+  """
+  on_time: DateScalar
+  """
+  班次名称
+  """
+  shift_name: String
+}
+
+type ShiftList {
+  """
+  班次 ID
+  """
+  id: String!
+  """
+  打卡记录
+  """
+  attendances: [Attendance]
+  """
+  考勤组
+  """
+  attendance_groups: [AttGroup]
+  """
+  创建人的id
+  """
+  created_by: String
+  """
+  早退多久记为早退
+  """
+  early_minutes_as_early: Int
+  """
+  早退多久记为缺卡
+  """
+  early_minutes_as_lack: Int
+  """
+  弹性打卡时间，设置【上班最多可晚到】与【下班最多可早走】时间，如果不设置flexible_rule则生效
+  """
+  flexible_minutes: Int
+  """
+  是否弹性打卡
+  """
+  is_flexible: Boolean
+  """
+  晚到多久记为缺卡
+  """
+  late_minutes_as_lack: Int
+  """
+  晚到多久记为迟到
+  """
+  late_minutes_as_late: Int
+  """
+  不需要打下班卡
+  """
+  no_need_off: Boolean
+  """
+  最晚多久可打下班卡
+  """
+  off_delay_minutes: Int
+  """
+  下班时间
+  """
+  off_time: String
+  """
+  最早多久可打上班卡
+  """
+  on_advance_minutes: Int
+  """
+  上班时间
+  """
+  on_time: String
+  """
+  打卡次数
+  """
+  punch_times: Int
+  """
+  班次名称
+  """
+  shift_name: String!
+  """
+  班次名称
+  """
+  updated_at: DateScalar
+}
+
+type ShiftListRes {
+  items: [ShiftList!]!
+  totalCount: Int!
+}
+
+type PunchTimeRules {
+  """
+  打卡规则 ID
+  """
+  id: String
+  """
+  班次 ID
+  """
+  shift_list_id: String
+  """
+  早退多久记为早退
+  """
+  early_minutes_as_early: Int
+  """
+  早退多久记为缺卡
+  """
+  early_minutes_as_lack: Int
+  """
+  晚到多久记为缺卡
+  """
+  late_minutes_as_lack: Int
+  """
+  晚到多久记为迟到
+  """
+  late_minutes_as_late: Int
+  """
+  最晚多久可打下班卡
+  """
+  off_delay_minutes: Int
+  """
+  下班时间
+  """
+  off_time: DateScalar
+  """
+  最早多久可打上班卡
+  """
+  on_advance_minutes: Int
+  """
+  上班时间
+  """
+  on_time: DateScalar
+}

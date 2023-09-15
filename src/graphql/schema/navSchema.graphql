@@ -1,0 +1,29 @@
+type Query {
+  """
+  获取所有路由（Tree形状）
+  """
+  navTree: [NavXlCategory]
+}
+
+type NavSmCategory {
+  id: Int!
+  key: String!
+  title: String!
+  url: String!
+}
+
+type NavBgCategory {
+  id: Int!
+  key: String!
+  title: String!
+  nav_xl_categories_id: Int
+  children: [NavSmCategory]
+}
+
+type NavXlCategory {
+  id: Int!
+  key: String!
+  title: String!
+  url: String!
+  children: [NavBgCategory]
+}

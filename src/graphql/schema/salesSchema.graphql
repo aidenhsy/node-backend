@@ -1,0 +1,25 @@
+type Query {
+  salesSummary(
+    shop_ids: String!
+    start_date: String!
+    end_date: String!
+  ): SalesSummary
+}
+
+type ChildSalesData {
+  name: String
+  amount: String
+}
+
+"""
+营业数据
+"""
+type SalesSummary {
+  salesData: [SalesData]
+}
+
+type SalesData {
+  name: String
+  amount: String
+  children: [ChildSalesData]
+}

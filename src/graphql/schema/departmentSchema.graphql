@@ -1,0 +1,80 @@
+type Query {
+  """
+  获取所有组的信息
+  """
+  departments(
+    """
+    获取数据数量
+    """
+    take: Int!
+    """
+    跳过数据数量
+    """
+    skip: Int!
+    """
+    筛选条件
+    """
+    filter: DepartmentFilter
+  ): DepartmentRes
+  """
+  通过用户组id获取单个用户组信息
+  """
+  departmentById(id: String): Department
+}
+
+input DepartmentFilter {
+  """
+  模糊搜索部门名字
+  """
+  name: String
+}
+
+type Department {
+  """
+  部门ID
+  """
+  id: ID!
+  """
+  部门名称
+  """
+  name: String
+  """
+  部门直属领导
+  """
+  manager_id: ID
+  """
+  小部门名称（eg：前厅，后厨。。。）
+  """
+  small_department_name: String
+  """
+  该部门成员
+  """
+  employees: [User]
+  """
+  所有子部门成员
+  """
+  all_employees: UsersList
+  """
+  父部门
+  """
+  parent_department: Department
+  """
+  父部门ID
+  """
+  parent_department_id: ID
+  """
+  所有子部门
+  """
+  child_departments: [Department]
+}
+
+type DepartmentRes {
+  """
+  该查询返回的部门
+  """
+  items: [Department]
+  """
+  该查询返回所有items的数量
+  """
+  totalCount: Int!
+}

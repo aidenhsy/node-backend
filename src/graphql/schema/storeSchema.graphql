@@ -1,0 +1,41 @@
+type Query {
+  """
+  所有门店
+  """
+  stores: [Store]
+  """
+  通过员工id获取门店
+  """
+  storesByEmployee(id: String!): [Store]
+}
+
+type Mutation {
+  """
+  添加门店到管理员
+  """
+  addAdminsStores(employee_ids: [String]!, store_ids: [String]!): [Store]
+  """
+  添加管理员到某个门店
+  """
+  addStoreAdmins(store_id: String!, employee_ids: [String]!): Store
+  """
+  在某个门店内删除管理员
+  """
+  deleteStoreAdmins(store_id: String!, employee_ids: [String]!): Store
+}
+
+type Store {
+  shop_id: ID
+  brand: Brand
+  brand_id: String
+  department_id: String
+  department: Department
+  managers: [User]
+  salary_account: String
+  seat_count: Int
+  status: Int
+  store: String
+  storeName: String
+  supply_shop_id: String
+  table_count: Int
+}

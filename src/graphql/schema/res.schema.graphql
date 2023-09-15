@@ -1,0 +1,4 @@
+type MutationResponse {
+  statusCode: Int
+  message: String
+}

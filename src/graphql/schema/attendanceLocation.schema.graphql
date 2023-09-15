@@ -1,0 +1,21 @@
+type Query {
+  attendanceLocations: [AttendanceLocation]
+}
+
+type AttendanceLocation {
+  id: ID
+  address: String
+  attendances: [Attendance]
+  attendance_group_id: String
+  attendance_group: AttGroup
+  bssid: String
+  feature: String
+  gps_range: Int
+  ip: String
+  latitude: Float
+  longitude: Float
+  map_type: Int
+  name: String
+  ssid: String
+  type: Int
+}
